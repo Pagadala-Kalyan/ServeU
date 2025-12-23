@@ -147,17 +147,17 @@
     <!-- SEND BUTTON -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/startHelpBtn"
-        android:layout_width="0dp"
-        android:layout_height="64dp"
+        android:layout_width="360dp"
+        android:layout_height="123dp"
+        android:layout_margin="24dp"
         android:text="SEND EMERGENCY REQUEST"
+        android:textColor="#FFFFFF"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:textColor="#FFFFFF"
         app:backgroundTint="#DC2626"
         app:cornerRadius="18dp"
-        android:layout_margin="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
