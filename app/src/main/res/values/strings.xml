@@ -1,3 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ServeU</string>
+    <string name="vehicle_breakdown_selected">Vehicle Breakdown selected</string>
+    <string name="accident_selected">Accident selected</string>
+    <string name="medical_emergency_selected">Medical Emergency selected</string>
+    <string name="fuel_battery_issue_selected">Fuel / Battery Issue selected</string>
+    <string name="unable_to_fetch_gps">Unable to fetch GPS</string>
+    <string name="sms_ready_to_send">SMS ready to send</string>
+    <string name="no_sms_app_found">No SMS app found</string>
+    <string name="location_format">%1$s , %2$s</string>
 </resources>
