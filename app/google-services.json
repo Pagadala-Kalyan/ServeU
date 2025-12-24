@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "742371719608",
+    "project_id": "serveu-1901e",
+    "storage_bucket": "serveu-1901e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:742371719608:android:13e0ad252941bffc56374d",
+        "android_client_info": {
+          "package_name": "com.example.serveu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFirTXkCGAN-FRRiQf0VupV_oWM4VPws0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
