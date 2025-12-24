@@ -76,11 +76,10 @@ class MainActivity : AppCompatActivity() {
     // ---------------- ONLINE MODE ----------------
 
     private fun sendOnlineEmergency() {
-        fetchLocation()
 
-        val db = FirebaseFirestore.getInstance()
+        val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
 
-        val data = hashMapOf(
+        val emergency = hashMapOf(
             "type" to selectedEmergency,
             "location" to binding.locationText.text.toString(),
             "timestamp" to System.currentTimeMillis(),
@@ -88,16 +87,17 @@ class MainActivity : AppCompatActivity() {
         )
 
         db.collection("emergencies")
-            .add(data)
+            .add(emergency)
             .addOnSuccessListener {
                 binding.status.text = "🌐 Emergency sent online"
                 showAiGuidance()
             }
-            .addOnFailureListener {
-                Toast.makeText(this, "Online failed, using SMS", Toast.LENGTH_SHORT).show()
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Firebase failed, using SMS", Toast.LENGTH_SHORT).show()
                 sendEmergencySms()
             }
     }
+
 
     // ---------------- OFFLINE MODE (SMS) ----------------
 
