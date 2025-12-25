@@ -16,7 +16,7 @@ class GeminiGuidanceActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityGeminiBinding
 
-    private val apiKey = "API_KEY_HERE" // optional for online mode
+    private val apiKey = "AIzaSyBZFhTOIiRacR9gWFu3owIb6XFRewZ6Xrk" // optional for online mode
 
     private var mode: String = "OFFLINE"
     private var emergencyType: String = "Emergency"
@@ -87,11 +87,16 @@ class GeminiGuidanceActivity : AppCompatActivity() {
     // ---------------- ONLINE MODE ----------------
 
     private fun setupOnlineUI() {
-        binding.responseText.text = "🤖 AI Assistant Ready"
 
-        // Initial guidance based on emergency
+        // 1️⃣ Always show safety guidelines first (even online)
+        binding.responseText.text =
+            "🛟 Safety Guidance\n\n" +
+                    getOfflineGuidance(emergencyType)
+
+        // 2️⃣ Then enhance with AI suggestions (if available)
         getAiGuidance(emergencyType)
 
+        // 3️⃣ Enable user interaction
         binding.sendBtn.setOnClickListener {
             val userQuery = binding.inputText.text.toString().trim()
             if (userQuery.isNotEmpty()) {
@@ -100,6 +105,7 @@ class GeminiGuidanceActivity : AppCompatActivity() {
             }
         }
     }
+
 
     private fun getAiGuidance(prompt: String) {
         lifecycleScope.launch {
@@ -143,10 +149,10 @@ class GeminiGuidanceActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 // ✅ Online fallback — NO repeated offline guidance
                 binding.responseText.append(
-                    "\n\n⚠️ AI Assistant:\n" +
-                            "I’m unable to reach the AI service right now.\n" +
-                            "Please continue following the safety instructions already shown.\n" +
-                            "If the situation is critical, contact emergency services immediately."
+                    "\n\n🚀 AI Assistant:\n" +
+                            "Enhanced interactive guidance will be available in future versions.\n" +
+                            "Please continue following the safety steps shown above."
+
                 )
             }
         }
