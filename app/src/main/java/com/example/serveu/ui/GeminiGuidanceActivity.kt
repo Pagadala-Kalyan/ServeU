@@ -49,8 +49,7 @@ class GeminiGuidanceActivity : AppCompatActivity() {
         binding.sendBtn.alpha = 0.5f
 
         binding.responseText.text =
-            "🤖 AI Safety Guidance (Offline Mode)\n\n" +
-                    getOfflineGuidance(emergencyType)
+            "🤖 AI Safety Guidance (Offline Mode)\n\n" + getOfflineGuidance(emergencyType)
     }
 
     private fun getOfflineGuidance(type: String): String {
@@ -90,8 +89,7 @@ class GeminiGuidanceActivity : AppCompatActivity() {
 
         // 1️⃣ Always show safety guidelines first (even online)
         binding.responseText.text =
-            "🛟 Safety Guidance\n\n" +
-                    getOfflineGuidance(emergencyType)
+            "🛟 Safety Guidance\n\n" + getOfflineGuidance(emergencyType)
 
         // 2️⃣ Then enhance with AI suggestions (if available)
         getAiGuidance(emergencyType)
