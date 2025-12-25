@@ -1,73 +1,130 @@
 package com.example.serveu
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.serveu.databinding.ActivityGeminiBinding
 import kotlinx.coroutines.launch
-import okhttp3.*
-import org.json.JSONObject
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
-
+import org.json.JSONObject
 
 
 class GeminiGuidanceActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityGeminiBinding
 
-    private val apiKey = "APi code here"
+    private val apiKey = "API_KEY_HERE" // optional for online mode
+
+    private var mode: String = "OFFLINE"
+    private var emergencyType: String = "Emergency"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // 1️⃣ Inflate UI first
         binding = ActivityGeminiBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val emergencyType = intent.getStringExtra("EMERGENCY_TYPE") ?: "Emergency"
+        // 2️⃣ Read intent safely
+        mode = intent?.getStringExtra("MODE") ?: "OFFLINE"
+        emergencyType = intent?.getStringExtra("EMERGENCY_TYPE") ?: "Emergency"
 
-        getGeminiGuidance(emergencyType)
+        // 3️⃣ Configure UI
+        if (mode == "OFFLINE") {
+            setupOfflineUI()
+        } else {
+            setupOnlineUI()
+        }
+    }
+
+    // ---------------- OFFLINE MODE ----------------
+
+    private fun setupOfflineUI() {
+        binding.inputText.isEnabled = false
+        binding.inputText.hint = "Offline guidance only"
+        binding.sendBtn.isEnabled = false
+        binding.sendBtn.alpha = 0.5f
+
+        binding.responseText.text =
+            "🤖 AI Safety Guidance (Offline Mode)\n\n" +
+                    getOfflineGuidance(emergencyType)
+    }
+
+    private fun getOfflineGuidance(type: String): String {
+        return when {
+            type.contains("Accident", true) ->
+                """
+                1. Ensure your own safety first and move away from traffic.
+                2. Do not move injured persons unless there is immediate danger.
+                3. Control bleeding using clean cloth if possible.
+                4. Contact emergency services immediately.
+                5. Stay with the injured person until help arrives.
+                """.trimIndent()
+
+            type.contains("Medical", true) ->
+                """
+                1. Check breathing and consciousness.
+                2. Keep the person calm and comfortable.
+                3. Do not give food or water.
+                4. Monitor symptoms carefully.
+                5. Seek medical help immediately.
+                """.trimIndent()
+
+            else ->
+                """
+                1. Stay calm and avoid panic.
+                2. Move to a safe and visible place.
+                3. Keep your phone battery conserved.
+                4. Inform someone you trust.
+                5. Wait safely for assistance.
+                """.trimIndent()
+        }
+    }
+
+    // ---------------- ONLINE MODE ----------------
+
+    private fun setupOnlineUI() {
+        binding.responseText.text = "🤖 AI Assistant Ready"
+
+        // Initial guidance based on emergency
+        getAiGuidance(emergencyType)
 
         binding.sendBtn.setOnClickListener {
-            val userQuery = binding.inputText.text.toString()
-            if (userQuery.isNotBlank()) {
-                getGeminiGuidance(userQuery)
+            val userQuery = binding.inputText.text.toString().trim()
+            if (userQuery.isNotEmpty()) {
+                getAiGuidance(userQuery)
                 binding.inputText.text?.clear()
             }
         }
     }
 
-    private fun getGeminiGuidance(prompt: String) {
+    private fun getAiGuidance(prompt: String) {
         lifecycleScope.launch {
             try {
-                binding.responseText.append("\n\n🧑‍💻 You: $prompt")
+                binding.responseText.append("\n\n🧑‍💻 You:\n$prompt")
 
                 val client = OkHttpClient()
 
                 val body = """
-                    {
-                      "contents": [{
-                        "parts":[{"text":"Give safety guidance for: $prompt"}]
-                      }]
-                    }
+                {
+                  "contents": [{
+                    "parts":[{"text":"Give clear, calm safety guidance for: $prompt"}]
+                  }]
+                }
                 """.trimIndent()
 
-                val requestBody = body.toRequestBody(
-                    "application/json".toMediaType()
-                )
-
+                val requestBody =
+                    body.toRequestBody("application/json".toMediaType())
 
                 val request = Request.Builder()
-                    .url("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$apiKey")
+                    .url(
+                        "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$apiKey"
+                    )
                     .post(requestBody)
                     .build()
-
-
 
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string() ?: ""
@@ -84,18 +141,14 @@ class GeminiGuidanceActivity : AppCompatActivity() {
                 binding.responseText.append("\n\n🤖 Gemini:\n$text")
 
             } catch (e: Exception) {
-                val fallback = when {
-                    prompt.contains("Accident", true) ->
-                        "Ensure safety, avoid moving injured persons, call emergency services."
-                    prompt.contains("Medical", true) ->
-                        "Check breathing, keep patient calm, avoid food or water."
-                    else ->
-                        "Stay calm, move to a safe location, help is on the way."
-                }
-
-                binding.responseText.append("\n\n🤖 AI (Fallback):\n$fallback")
+                // ✅ Online fallback — NO repeated offline guidance
+                binding.responseText.append(
+                    "\n\n⚠️ AI Assistant:\n" +
+                            "I’m unable to reach the AI service right now.\n" +
+                            "Please continue following the safety instructions already shown.\n" +
+                            "If the situation is critical, contact emergency services immediately."
+                )
             }
-
         }
     }
 }

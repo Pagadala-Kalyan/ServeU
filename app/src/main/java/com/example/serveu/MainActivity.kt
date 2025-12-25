@@ -9,12 +9,13 @@ import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.serveu.databinding.ActivityMainBinding
-import com.google.android.gms.location.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Locale
 
@@ -25,6 +26,17 @@ class MainActivity : AppCompatActivity() {
 
     private var selectedEmergency = "General SOS"
     private val emergencyNumber = "9440696941"
+
+    // ✅ SMS RESULT HANDLER
+    private val smsLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+
+            // User returned from SMS app → now open AI guidance
+            val intent = Intent(this, GeminiGuidanceActivity::class.java)
+            intent.putExtra("MODE", "OFFLINE")
+            intent.putExtra("EMERGENCY_TYPE", selectedEmergency)
+            startActivity(intent)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,8 +49,10 @@ class MainActivity : AppCompatActivity() {
         setupSendButton()
         checkLocationPermission()
     }
-    private fun setupEmergencyButtons() {
 
+    // ---------------- EMERGENCY SELECTION ----------------
+
+    private fun setupEmergencyButtons() {
         binding.btnBreakdown.setOnClickListener {
             selectedEmergency = "Vehicle Breakdown"
             binding.status.text = "Vehicle Breakdown selected"
@@ -60,7 +74,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     // ---------------- SEND LOGIC ----------------
 
     private fun setupSendButton() {
@@ -76,8 +89,7 @@ class MainActivity : AppCompatActivity() {
     // ---------------- ONLINE MODE ----------------
 
     private fun sendOnlineEmergency() {
-
-        val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+        val db = FirebaseFirestore.getInstance()
 
         val emergency = hashMapOf(
             "type" to selectedEmergency,
@@ -90,22 +102,22 @@ class MainActivity : AppCompatActivity() {
             .add(emergency)
             .addOnSuccessListener {
                 binding.status.text = "🌐 Emergency sent online"
-                showAiGuidance()
+
                 val intent = Intent(this, GeminiGuidanceActivity::class.java)
+                intent.putExtra("MODE", "ONLINE")
                 intent.putExtra("EMERGENCY_TYPE", selectedEmergency)
                 startActivity(intent)
-
             }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Firebase failed, using SMS", Toast.LENGTH_SHORT).show()
+            .addOnFailureListener {
+                Toast.makeText(this, "Online failed, using SMS", Toast.LENGTH_SHORT).show()
                 sendEmergencySms()
             }
     }
 
-
     // ---------------- OFFLINE MODE (SMS) ----------------
 
     private fun sendEmergencySms() {
+
         val message = """
             SERVEU ALERT 🚨
             Type: $selectedEmergency
@@ -113,45 +125,27 @@ class MainActivity : AppCompatActivity() {
             Please help immediately.
         """.trimIndent()
 
-        val intent = Intent(Intent.ACTION_SENDTO)
-        intent.data = Uri.parse("smsto:$emergencyNumber")
-        intent.putExtra("sms_body", message)
-
-        startActivity(intent)
-        binding.status.text = "📩 SMS ready to send"
-        showOfflineGuidance()
-    }
-
-    // ---------------- AI GUIDANCE ----------------
-
-    private fun showAiGuidance() {
-        val guidance = when (selectedEmergency) {
-            "Accident" -> "Do not move injured person. Call emergency services."
-            "Medical Emergency" -> "Check breathing. Keep patient calm."
-            "Vehicle Breakdown" -> "Turn on hazard lights. Stay visible."
-            else -> "Stay calm. Help is on the way."
+        val smsIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("smsto:$emergencyNumber")
+            putExtra("sms_body", message)
         }
 
-        AlertDialog.Builder(this)
-            .setTitle("AI Safety Guidance")
-            .setMessage(guidance)
-            .setPositiveButton("OK", null)
-            .show()
-    }
+        Toast.makeText(
+            this,
+            "Please send the SMS. Safety guidance will appear after.",
+            Toast.LENGTH_LONG
+        ).show()
 
-    private fun showOfflineGuidance() {
-        AlertDialog.Builder(this)
-            .setTitle("Safety Instructions")
-            .setMessage("Stay calm and safe until help arrives.")
-            .setPositiveButton("OK", null)
-            .show()
+        // ✅ IMPORTANT: launch via launcher, NOT startActivity
+        smsLauncher.launch(smsIntent)
     }
 
     // ---------------- LOCATION ----------------
 
     private fun checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_FINE_LOCATION
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
@@ -166,7 +160,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun fetchLocation() {
         if (ActivityCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_FINE_LOCATION
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) return
 
