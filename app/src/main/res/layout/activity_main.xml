@@ -5,16 +5,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F1F5F9">
+    android:background="#F8FAFC">
 
-    <!-- TOP BLUE REGION -->
+    <!-- HEADER -->
     <LinearLayout
-        android:id="@+id/topRegion"
+        android:id="@+id/header"
         android:layout_width="0dp"
-        android:layout_height="170dp"
+        android:layout_height="180dp"
         android:orientation="vertical"
         android:gravity="center"
-        android:background="#1E40AF"
+        android:background="@drawable/header_gradient"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -23,134 +23,128 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="ServeU"
-            android:textSize="50sp"
+            android:textSize="42sp"
             android:textStyle="bold"
-            android:textColor="#ffffff"
-            android:fontFamily="times"/>
+            android:textColor="#FFFFFF"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Emergency Assistance"
-            android:textSize="16sp"
-            android:textColor="#BFDBFE"
-            android:layout_marginTop="6dp"
-            android:fontFamily="times"/>
+            android:text="Emergency assistance you can trust"
+            android:textSize="14sp"
+            android:textColor="#DBEAFE"
+            android:layout_marginTop="6dp"/>
     </LinearLayout>
 
-    <!-- CONTENT -->
-    <LinearLayout
-        android:id="@+id/content"
+    <!-- SCROLLABLE CONTENT -->
+    <ScrollView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintBottom_toTopOf="@id/startHelpBtn"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topRegion">
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- GLASS BUTTONS -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnBreakdown"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginBottom="14dp"
-            android:background="@drawable/glass_button_bg"
-            android:elevation="8dp"
-            android:fontFamily="sans-serif-medium"
-            android:text="Vehicle Breakdown"
-            android:textColor="#0F172A"
-            android:textSize="16sp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAccident"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginBottom="14dp"
-            android:background="@drawable/glass_button_bg"
-            android:elevation="8dp"
-            android:fontFamily="sans-serif-medium"
-            android:text="Accident"
-            android:textColor="#7F1D1D"
-            android:textSize="16sp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnMedical"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginBottom="14dp"
-            android:background="@drawable/glass_button_bg"
-            android:elevation="8dp"
-            android:fontFamily="sans-serif-medium"
-            android:text="Medical Emergency"
-            android:textColor="#92400E"
-            android:textSize="16sp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnFuel"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="@drawable/glass_button_bg"
-            android:elevation="8dp"
-            android:fontFamily="sans-serif-medium"
-            android:text="Fuel / Battery Issue"
-            android:textColor="#1E40AF"
-            android:textSize="16sp" />
-
-        <!-- STATUS TEXT (REQUIRED FOR BINDING) -->
-        <TextView
-            android:id="@+id/status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="ServeU ready"
-            android:textStyle="bold"
-            android:textColor="#334155"
-            android:textSize="16sp" />
-
-
-        <!-- LOCATION CARD -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/locationCard"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            app:cardBackgroundColor="#FFFFFF"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="6dp">
+            android:orientation="vertical"
+            android:padding="24dp">
 
-            <LinearLayout
+            <!-- GLASS BUTTONS -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBreakdown"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="14dp"
+                android:text="Vehicle Breakdown"
+                android:textColor="#0F172A"
+                android:textSize="16sp"
+                android:background="@drawable/glass_button_bg"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAccident"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="14dp"
+                android:text="Accident"
+                android:textColor="#7F1D1D"
+                android:textSize="16sp"
+                android:background="@drawable/glass_button_bg"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnMedical"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="14dp"
+                android:text="Medical Emergency"
+                android:textColor="#92400E"
+                android:textSize="16sp"
+                android:background="@drawable/glass_button_bg"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFuel"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Fuel / Battery Issue"
+                android:textColor="#1E40AF"
+                android:textSize="16sp"
+                android:background="@drawable/glass_button_bg"/>
+
+            <!-- STATUS -->
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Ready to assist"
+                android:textColor="#64748B"
+                android:textSize="14sp"/>
+
+            <!-- LOCATION CARD -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="#FFFFFF">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Current Location"
-                    android:textColor="#64748B"
-                    android:textSize="15sp" />
+                    android:orientation="vertical"
+                    android:padding="18dp">
 
-                <TextView
-                    android:id="@+id/locationText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Fetching coordinates…"
-                    android:textColor="#0F172A"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Current Location"
+                        android:textColor="#64748B"
+                        android:textSize="13sp"/>
 
-    <!-- SEND BUTTON -->
+                    <TextView
+                        android:id="@+id/locationText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Fetching GPS…"
+                        android:textColor="#0F172A"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- PRIMARY CTA -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/startHelpBtn"
-        android:layout_width="360dp"
-        android:layout_height="100dp"
-        android:layout_margin="24dp"
+        android:layout_width="366dp"
+        android:layout_height="123dp"
+        android:layout_margin="20dp"
         android:text="SEND EMERGENCY REQUEST"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
@@ -159,7 +153,6 @@
         app:cornerRadius="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.686"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
