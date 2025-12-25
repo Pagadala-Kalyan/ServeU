@@ -16,7 +16,7 @@ class GeminiGuidanceActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityGeminiBinding
 
-    private val apiKey = "AIzaSyBZFhTOIiRacR9gWFu3owIb6XFRewZ6Xrk" // optional for online mode
+    private val apiKey = "Type API Key Here" // optional for online mode
 
     private var mode: String = "OFFLINE"
     private var emergencyType: String = "Emergency"
