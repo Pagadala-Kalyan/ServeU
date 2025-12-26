@@ -9,101 +9,97 @@
     app:cardElevation="6dp"
     app:cardBackgroundColor="#FFFFFF">
 
+    <!-- HORIZONTAL WRAPPER FOR ACCENT -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp">
+        android:orientation="horizontal">
 
-        <!-- LEFT ACCENT -->
+        <!-- 🎨 EMERGENCY TYPE ACCENT (FIXES ERROR) -->
         <View
+            android:id="@+id/typeAccent"
             android:layout_width="6dp"
             android:layout_height="match_parent"
-            android:background="#2563EB"
-            android:layout_marginEnd="14dp"/>
+            android:background="#2563EB"/>
 
         <!-- CONTENT -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <!-- USER PHONE -->
+            <!-- 🚨 EMERGENCY TYPE -->
             <TextView
-                android:text="User Phone"
-                android:textSize="12sp"
-                android:textColor="#64748B"
+                android:id="@+id/tvEmergencyType"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:text="Emergency Type"
+                android:textColor="#2563EB"
+                android:textStyle="bold"
+                android:textSize="15sp"/>
 
+            <!-- 📱 USER PHONE -->
             <TextView
                 android:id="@+id/tvUserPhoneNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Not available"
-                android:textSize="15sp"
-                android:textStyle="bold"
+                android:text="User Phone"
                 android:textColor="#0F172A"
-                android:layout_marginBottom="10dp"/>
+                android:textStyle="bold"
+                android:textSize="15sp"
+                android:layout_marginTop="6dp"/>
 
-            <!-- EMERGENCY CONTACT -->
-            <TextView
-                android:text="Emergency Contact"
-                android:textSize="12sp"
-                android:textColor="#64748B"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
+            <!-- 🚨 EMERGENCY CONTACT -->
             <TextView
                 android:id="@+id/tvEmergencyContact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="9533344568"
+                android:text="Emergency Contact"
+                android:textColor="#334155"
                 android:textSize="14sp"
-                android:textColor="#0F172A"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginTop="4dp"/>
 
-            <!-- LOCATION -->
-            <TextView
-                android:text="Location"
-                android:textSize="12sp"
-                android:textColor="#64748B"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
+            <!-- 📍 LOCATION -->
             <TextView
                 android:id="@+id/tvLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="16.5214789 , 80.6708156"
+                android:text="Location"
+                android:textColor="#334155"
                 android:textSize="14sp"
-                android:textColor="#0F172A"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginTop="4dp"/>
 
-            <!-- TIMESTAMP -->
+            <!-- 🕒 TIME -->
             <TextView
                 android:id="@+id/tvTimestamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="26 Dec 2025 • 11:04 AM"
-                android:textSize="12sp"
-                android:textColor="#64748B"/>
+                android:text="Time"
+                android:textColor="#64748B"
+                android:textSize="13sp"
+                android:layout_marginTop="6dp"/>
+
+            <!-- DIVIDER -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E5E7EB"
+                android:layout_marginVertical="12dp"/>
+
+            <!-- 🗑 RESOLVE BUTTON -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Resolve"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="14dp"
+                app:backgroundTint="#DC2626"/>
 
         </LinearLayout>
-
-        <!-- DELETE BUTTON -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDelete"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:text="DELETE"
-            android:textAllCaps="true"
-            android:textStyle="bold"
-            android:textSize="12sp"
-            android:textColor="#FFFFFF"
-            app:cornerRadius="12dp"
-            app:backgroundTint="#DC2626"/>
 
     </LinearLayout>
 

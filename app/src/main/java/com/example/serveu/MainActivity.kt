@@ -120,18 +120,17 @@ class MainActivity : AppCompatActivity() {
         val database = FirebaseDatabase.getInstance().getReference("emergency_requests")
         val requestId = database.push().key ?: return
 
-
-
+        // ✅ CREATE REQUEST OBJECT (STORE IT!)
         val request = EmergencyRequest(
             userPhoneNumber = "",
             emergencyContact = emergencyContact,
             latitude = currentLocation!!.latitude,
             longitude = currentLocation!!.longitude,
             timestamp = System.currentTimeMillis(),
-            time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
-
+            emergencyType = selectedEmergency
         )
 
+        // 🔥 Optional Firestore (you already did this correctly)
         val emergency = Emergency(
             id = requestId,
             emergencyType = selectedEmergency,
@@ -146,23 +145,21 @@ class MainActivity : AppCompatActivity() {
                 firestoreService.saveEmergency(emergency)
             } catch (e: Exception) {
                 Log.e("MainActivity", "Error saving to Firestore", e)
-                runOnUiThread {
-                    Toast.makeText(this@MainActivity, "Error saving to Firestore: ${e.message}", Toast.LENGTH_LONG).show()
-                }
             }
         }
 
+        // ✅ SEND TO REALTIME DATABASE
         database.child(requestId).setValue(request)
             .addOnSuccessListener {
                 emergencySent = true
                 binding.status.text = "🌐 Emergency sent online"
 
                 val message = """
-                    SERVEU ALERT 🚨
-                    Type: $selectedEmergency
-                    Location: ${binding.locationText.text}
-                    Please help immediately.
-                """.trimIndent()
+                SERVEU ALERT 🚨
+                Type: $selectedEmergency
+                Location: ${binding.locationText.text}
+                Please help immediately.
+            """.trimIndent()
 
                 val smsIntent = Intent(Intent.ACTION_SENDTO).apply {
                     data = Uri.parse("smsto:$emergencyContact")
@@ -172,6 +169,7 @@ class MainActivity : AppCompatActivity() {
                 startActivity(smsIntent)
             }
     }
+
 
     // ---------------- OFFLINE ----------------
 

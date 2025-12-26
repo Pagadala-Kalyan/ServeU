@@ -1,5 +1,6 @@
 package com.example.serveu.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -10,7 +11,7 @@ import java.util.Date
 import java.util.Locale
 
 class EmergencyAdapter(
-    private val emergencyRequests: List<EmergencyRequest>,
+    private val emergencyRequests: MutableList<EmergencyRequest>,
     private val onDeleteClick: (String) -> Unit
 ) : RecyclerView.Adapter<EmergencyAdapter.ViewHolder>() {
 
@@ -20,34 +21,54 @@ class EmergencyAdapter(
 
         fun bind(request: EmergencyRequest) {
 
-            // ✅ Safe phone number display
-            binding.tvUserPhoneNumber.text =
-                "User Phone Number: ${
-                    if (request.userPhoneNumber.isBlank())
-                        "Not available"
-                    else
-                        request.userPhoneNumber
-                }"
+            // 🚨 Emergency Type
+            binding.tvEmergencyType.text = request.emergencyType
 
-            binding.tvEmergencyContact.text =
-                "Emergency Contact: ${request.emergencyContact}"
-
-            binding.tvLocation.text =
-                "Location: ${request.latitude}, ${request.longitude}"
-
-            // ✅ Human-readable timestamp
-            val sdf = SimpleDateFormat(
-                "dd MMM yyyy • hh:mm a",
-                Locale.getDefault()
+            // Accent color by type
+            binding.typeAccent.setBackgroundColor(
+                when (request.emergencyType) {
+                    "Accident" -> Color.parseColor("#DC2626")
+                    "Medical Emergency" -> Color.parseColor("#F59E0B")
+                    "Vehicle Breakdown" -> Color.parseColor("#2563EB")
+                    else -> Color.parseColor("#64748B")
+                }
             )
-            val formattedTime = sdf.format(Date(request.timestamp))
 
-            binding.tvTimestamp.text =
-                "Time: $formattedTime"
+            // 📱 User phone
+            binding.tvUserPhoneNumber.text =
+                request.userPhoneNumber.ifEmpty { "Not available" }
 
+            // 🚨 Emergency contact
+            binding.tvEmergencyContact.text =
+                request.emergencyContact
+
+            // 📍 Location
+            binding.tvLocation.text =
+                "${request.latitude}, ${request.longitude}"
+
+            // 🕒 Timestamp
+            binding.tvTimestamp.text = formatTime(request.timestamp)
+
+            // 🗑 Resolve / Delete
             binding.btnDelete.setOnClickListener {
-                onDeleteClick(request.id)
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    animateDelete(pos, request.id)
+                }
             }
+        }
+
+        private fun animateDelete(position: Int, id: String) {
+            binding.root.animate()
+                .translationX(binding.root.width.toFloat())
+                .alpha(0f)
+                .setDuration(300)
+                .withEndAction {
+                    emergencyRequests.removeAt(position)
+                    notifyItemRemoved(position)
+                    onDeleteClick(id)
+                }
+                .start()
         }
     }
 
@@ -65,4 +86,10 @@ class EmergencyAdapter(
     }
 
     override fun getItemCount(): Int = emergencyRequests.size
+
+    // 🕒 timestamp → readable time
+    private fun formatTime(timestamp: Long): String {
+        val sdf = SimpleDateFormat("dd MMM yyyy • hh:mm a", Locale.getDefault())
+        return sdf.format(Date(timestamp))
+    }
 }
