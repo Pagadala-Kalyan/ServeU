@@ -5,6 +5,7 @@ data class EmergencyRequest(
     val emergencyContact: String = "",
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
+    val time: String = "",
     val timestamp: Long = 0L,
     var id: String = ""
 )

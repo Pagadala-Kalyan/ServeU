@@ -1,5 +1,7 @@
 package com.example.serveu
 
+import java.text.SimpleDateFormat
+import java.util.Date
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -118,12 +120,16 @@ class MainActivity : AppCompatActivity() {
         val database = FirebaseDatabase.getInstance().getReference("emergency_requests")
         val requestId = database.push().key ?: return
 
+
+
         val request = EmergencyRequest(
             userPhoneNumber = "",
             emergencyContact = emergencyContact,
             latitude = currentLocation!!.latitude,
             longitude = currentLocation!!.longitude,
-            timestamp = System.currentTimeMillis()
+            timestamp = System.currentTimeMillis(),
+            time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+
         )
 
         val emergency = Emergency(
