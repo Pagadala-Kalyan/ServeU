@@ -7,6 +7,8 @@ import com.example.serveu.adapter.EmergencyAdapter
 import com.example.serveu.databinding.ActivityAdminDashboardBinding
 import com.example.serveu.model.EmergencyRequest
 import com.google.firebase.database.*
+import android.content.Intent
+
 
 class AdminDashboardActivity : AppCompatActivity() {
 
@@ -28,6 +30,19 @@ class AdminDashboardActivity : AppCompatActivity() {
 
         setupRecyclerView()
         listenForEmergencyRequests()
+        binding.btnLogout.setOnClickListener {
+            logout()
+        }
+
+    }
+    private fun logout() {
+        val prefs = getSharedPreferences("ServeU", MODE_PRIVATE)
+        prefs.edit().clear().apply()
+
+        val intent = Intent(this, RoleSelectionActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 
     // ---------------- RecyclerView ----------------

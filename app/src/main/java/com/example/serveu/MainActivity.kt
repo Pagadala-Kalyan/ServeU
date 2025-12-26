@@ -1,7 +1,5 @@
 package com.example.serveu
 
-import java.text.SimpleDateFormat
-import java.util.Date
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -21,14 +19,14 @@ import com.example.serveu.firestore.FirestoreService
 import com.example.serveu.model.Emergency
 import com.example.serveu.model.EmergencyRequest
 import com.example.serveu.ui.EmergencySetupActivity
+import com.example.serveu.ui.RoleSelectionActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.database.FirebaseDatabase
-import java.util.Locale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,9 +39,6 @@ class MainActivity : AppCompatActivity() {
 
     private val firestoreService = FirestoreService()
 
-    // 🔒 STATE LOCK
-    private var emergencySent = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -54,6 +49,22 @@ class MainActivity : AppCompatActivity() {
         setupEmergencyButtons()
         setupSendButton()
         checkLocationPermission()
+
+        binding.btnLogout.setOnClickListener {
+            logout()
+        }
+    }
+
+    // ---------------- LOGOUT ----------------
+
+    private fun logout() {
+        val prefs = getSharedPreferences("ServeU", MODE_PRIVATE)
+        prefs.edit().clear().apply()
+
+        val intent = Intent(this, RoleSelectionActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 
     // ---------------- EMERGENCY TYPE ----------------
@@ -67,10 +78,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun selectEmergency(type: String) {
         selectedEmergency = type
-        emergencySent = false   // reset only when user chooses again
         binding.status.text = "$type selected"
     }
-
 
     // ---------------- SEND BUTTON ----------------
 
@@ -85,18 +94,18 @@ class MainActivity : AppCompatActivity() {
 
             val mode = if (isInternetAvailable()) "ONLINE" else "OFFLINE"
 
-            // ✅ 1️⃣ SET STATUS IMMEDIATELY (VISIBLE)
+            // Show status immediately
             binding.status.text =
                 if (mode == "ONLINE") "🌐 Emergency sent online"
                 else "📴 Emergency sending offline…"
 
-            // ✅ 2️⃣ OPEN AI SCREEN
+            // Open AI guidance screen
             val aiIntent = Intent(this, GeminiGuidanceActivity::class.java)
             aiIntent.putExtra("MODE", mode)
             aiIntent.putExtra("EMERGENCY_TYPE", selectedEmergency)
             startActivity(aiIntent)
 
-            // ✅ 3️⃣ DO BACKGROUND WORK (NO UI DEPENDENCY)
+            // Send emergency
             if (mode == "ONLINE") {
                 sendOnlineEmergency()
             } else {
@@ -104,7 +113,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 
     // ---------------- ONLINE ----------------
 
@@ -120,7 +128,6 @@ class MainActivity : AppCompatActivity() {
         val database = FirebaseDatabase.getInstance().getReference("emergency_requests")
         val requestId = database.push().key ?: return
 
-        // ✅ CREATE REQUEST OBJECT (STORE IT!)
         val request = EmergencyRequest(
             userPhoneNumber = "",
             emergencyContact = emergencyContact,
@@ -130,7 +137,7 @@ class MainActivity : AppCompatActivity() {
             emergencyType = selectedEmergency
         )
 
-        // 🔥 Optional Firestore (you already did this correctly)
+        // Firestore (optional analytics/logs)
         val emergency = Emergency(
             id = requestId,
             emergencyType = selectedEmergency,
@@ -144,22 +151,20 @@ class MainActivity : AppCompatActivity() {
             try {
                 firestoreService.saveEmergency(emergency)
             } catch (e: Exception) {
-                Log.e("MainActivity", "Error saving to Firestore", e)
+                Log.e("MainActivity", "Firestore error", e)
             }
         }
 
-        // ✅ SEND TO REALTIME DATABASE
+        // Realtime DB
         database.child(requestId).setValue(request)
             .addOnSuccessListener {
-                emergencySent = true
-                binding.status.text = "🌐 Emergency sent online"
 
                 val message = """
-                SERVEU ALERT 🚨
-                Type: $selectedEmergency
-                Location: ${binding.locationText.text}
-                Please help immediately.
-            """.trimIndent()
+                    SERVEU ALERT 🚨
+                    Type: $selectedEmergency
+                    Location: ${binding.locationText.text}
+                    Please help immediately.
+                """.trimIndent()
 
                 val smsIntent = Intent(Intent.ACTION_SENDTO).apply {
                     data = Uri.parse("smsto:$emergencyContact")
@@ -170,13 +175,9 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-
     // ---------------- OFFLINE ----------------
 
     private fun sendOfflineSms() {
-        emergencySent = true
-        binding.status.text = "📴 Emergency sent offline"
-
         val message = """
             SERVEU ALERT 🚨
             Type: $selectedEmergency
@@ -192,15 +193,6 @@ class MainActivity : AppCompatActivity() {
         startActivity(smsIntent)
     }
 
-    // ---------------- AI SCREEN ----------------
-
-    private fun openAiGuidance(mode: String) {
-        val intent = Intent(this, GeminiGuidanceActivity::class.java)
-        intent.putExtra("MODE", mode)
-        intent.putExtra("EMERGENCY_TYPE", selectedEmergency)
-        startActivity(intent)
-    }
-
     // ---------------- LOCATION ----------------
 
     private fun checkLocationPermission() {
@@ -209,7 +201,9 @@ class MainActivity : AppCompatActivity() {
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
-                this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 100
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                100
             )
         } else {
             fetchLocation()

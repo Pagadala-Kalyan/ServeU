@@ -1,9 +1,9 @@
 package com.example.serveu.ui
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.serveu.MainActivity
 import com.example.serveu.databinding.ActivityRoleSelectionBinding
 
 class RoleSelectionActivity : AppCompatActivity() {
@@ -12,24 +12,40 @@ class RoleSelectionActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // SharedPreferences
+        val prefs = getSharedPreferences("ServeU", MODE_PRIVATE)
+
+        // 🔁 AUTO-REDIRECT IF ROLE ALREADY CHOSEN
+        when (prefs.getString("ROLE", null)) {
+            "ADMIN" -> {
+                startActivity(Intent(this, AdminDashboardActivity::class.java))
+                finish()
+                return
+            }
+            "USER" -> {
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+                return
+            }
+        }
+
+        // 🔹 No role yet → show UI
         binding = ActivityRoleSelectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // ---------------- BUTTONS ----------------
+
         binding.btnAdmin.setOnClickListener {
-            saveRole("admin")
-            startActivity(Intent(this, SecretCodeActivity::class.java))
+            prefs.edit().putString("ROLE", "ADMIN").apply()
+            startActivity(Intent(this, AdminDashboardActivity::class.java))
             finish()
         }
 
         binding.btnRegularUser.setOnClickListener {
-            saveRole("user")
-            startActivity(Intent(this, EmergencySetupActivity::class.java))
+            prefs.edit().putString("ROLE", "USER").apply()
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
-    }
-
-    private fun saveRole(role: String) {
-        val sharedPreferences = getSharedPreferences("ServeU", Context.MODE_PRIVATE)
-        sharedPreferences.edit().putString("ROLE", role).apply()
     }
 }
