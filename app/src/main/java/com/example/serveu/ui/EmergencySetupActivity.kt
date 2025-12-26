@@ -3,6 +3,7 @@ package com.example.serveu.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.serveu.MainActivity
 import com.example.serveu.databinding.ActivityEmergencySetupBinding
@@ -22,6 +23,8 @@ class EmergencySetupActivity : AppCompatActivity() {
                 saveEmergencyNumber(emergencyNumber)
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
+            } else {
+                Toast.makeText(this, "Please enter a valid number", Toast.LENGTH_SHORT).show()
             }
         }
     }
