@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#F8FAFC">
 
-    <!-- 🔵 Header -->
+    <!-- Header -->
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="0dp"
@@ -35,7 +35,7 @@
             android:layout_marginTop="6dp"/>
     </LinearLayout>
 
-    <!-- 🧊 Glass Card -->
+    <!-- Card -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -53,12 +53,15 @@
             android:orientation="vertical"
             android:padding="24dp">
 
+            <!-- ✅ International phone input -->
             <EditText
                 android:id="@+id/etEmergencyNumber"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:hint="Emergency Contact Number"
                 android:inputType="phone"
+                android:digits="0123456789+"
+                android:maxLength="15"
                 android:padding="12dp"
                 android:textColor="#0F172A"
                 android:textColorHint="#64748B"
@@ -74,8 +77,8 @@
                 android:textColor="#FFFFFF"
                 app:cornerRadius="18dp"
                 app:backgroundTint="#2563EB"/>
-        </LinearLayout>
 
+        </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,7 @@ package com.example.serveu.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Patterns
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.serveu.MainActivity
@@ -18,19 +19,39 @@ class EmergencySetupActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnSave.setOnClickListener {
-            val emergencyNumber = binding.etEmergencyNumber.text.toString()
-            if (emergencyNumber.isNotEmpty()) {
-                saveEmergencyNumber(emergencyNumber)
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
-            } else {
-                Toast.makeText(this, "Please enter a valid number", Toast.LENGTH_SHORT).show()
+            val emergencyNumber = binding.etEmergencyNumber.text.toString().trim()
+
+            // ❌ Empty
+            if (emergencyNumber.isEmpty()) {
+                binding.etEmergencyNumber.error = "Enter phone number"
+                return@setOnClickListener
             }
+
+            // ❌ Too short to be real
+            if (emergencyNumber.length < 8) {
+                binding.etEmergencyNumber.error = "Enter a valid phone number"
+                return@setOnClickListener
+            }
+
+            // ❌ Android international validation
+            if (!Patterns.PHONE.matcher(emergencyNumber).matches()) {
+                binding.etEmergencyNumber.error = "Invalid phone number"
+                return@setOnClickListener
+            }
+
+            // ✅ Save
+            saveEmergencyNumber(emergencyNumber)
+            Toast.makeText(this, "Emergency number saved", Toast.LENGTH_SHORT).show()
+
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
         }
     }
 
     private fun saveEmergencyNumber(number: String) {
         val sharedPreferences = getSharedPreferences("ServeU", Context.MODE_PRIVATE)
-        sharedPreferences.edit().putString("EMERGENCY_NUMBER", number).apply()
+        sharedPreferences.edit()
+            .putString("EMERGENCY_NUMBER", number)
+            .apply()
     }
 }
