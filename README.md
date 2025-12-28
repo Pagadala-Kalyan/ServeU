@@ -15,7 +15,7 @@ ServeU enables users to request help even without internet access by using SMS-b
 - Sends alerts to emergency contacts, service centers, and highway patrol (configurable)
 - Designed for use during stressful situations with minimal interaction
 
-## Online Mode (Future Scope)
+## Online Mode 
 
 - Firebase logging of emergency events
 - AI-powered safety guidance (Gemini)
@@ -107,4 +107,4 @@ ServeU enables users to request help even without internet access by using SMS-b
 
 ## 📜 License
 
-This project is open-source and intended for educational and hackathon purposes.
+MIT License
